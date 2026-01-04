@@ -1,9 +1,9 @@
 import mongoose from "mongoose";
-import { MONGODB_URI } from "../config";
+import { MONGO_URI } from "../config";
 
 export async function connectDatabase(){
     try {
-        await mongoose.connect(MONGODB_URI);
+        await mongoose.connect(MONGO_URI);
         console.log("Connected to MongoDB");
     } catch (error) {
         console.error("Database Error:", error);
