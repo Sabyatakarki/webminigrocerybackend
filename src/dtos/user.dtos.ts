@@ -4,23 +4,30 @@ import { UserSchema } from "../types/user.types";
 /**
  * CREATE USER DTO
  * Used for Register API
- * confirmPassword is NOT handled in backend
+ * Now uses fullName & phoneNumber instead of firstName/lastName
  */
 export const CreateUserDTO = UserSchema.pick({
-
-  username:true,
+  fullName: true, 
+  phoneNumber: true,  
   email: true,
+  username: true,
   password: true,
-  imageUrl:true
-      
-
-});
+  imageUrl: true,
+}).extend({
+  confirmPassword: z.string().min(6),
+}).refine(
+  (data) => data.password === data.confirmPassword,
+  {
+    message: "Passwords do not match",
+    path: ["confirmPassword"],
+  }
+);
 
 export type CreateUserDTO = z.infer<typeof CreateUserDTO>;
 
 /**
  * LOGIN USER DTO
- * Used for Login API
+ * (unchanged)
  */
 export const LoginUserDTO = z.object({
   email: z.string().email(),
@@ -29,5 +36,9 @@ export const LoginUserDTO = z.object({
 
 export type LoginUserDTO = z.infer<typeof LoginUserDTO>;
 
-export const UpdateUserDTO = UserSchema.partial(); // all attributes optional
+/**
+ * UPDATE USER DTO
+ * Allows updating any user field (fullName, phoneNumber, etc.)
+ */
+export const UpdateUserDTO = UserSchema.partial();
 export type UpdateUserDTO = z.infer<typeof UpdateUserDTO>;

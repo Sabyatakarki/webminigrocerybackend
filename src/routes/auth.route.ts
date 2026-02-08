@@ -15,10 +15,11 @@ router.post("/login", authController.login);
 // Order changed: upload first to parse form data, then auth to check token from body if needed
 router.post(
   "/update-profile",
-  authorizedMiddleware,         
-  uploads.single("profilePicture"),
+  uploads.single("profilePicture"),  // parse form first
+  authorizedMiddleware,              // then check token
   authController.updateProfile
 );
+
 
 
 
