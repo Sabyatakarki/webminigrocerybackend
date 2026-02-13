@@ -2,8 +2,10 @@ import { CreateUserDTO, LoginUserDTO, UpdateUserDTO } from "../dtos/user.dtos";
 import { UserRepository } from "../repositories/user.repository";
 import bcryptjs from "bcryptjs";
 import { HttpError } from "../errors/http-error";
-import jwt from "jsonwebtoken";
 import { JWT_SECRET } from "../config";
+import { CLIENT_URL } from "../config";
+import jwt from "jsonwebtoken";
+import { sendEmail } from "../config/email";
 
 const userRepository = new UserRepository();
 
@@ -94,4 +96,37 @@ export class UserService {
     const updatedUser = await userRepository.updateUser(userId, data);
     return updatedUser;
   }
+
+  async sendResetPasswordEmail(email?: string) {
+        if (!email) {
+            throw new HttpError(400, "Email is required");
+        }
+        const user = await userRepository.getUserByEmail(email);
+        if (!user) {
+            throw new HttpError(404, "User not found");
+        }
+        const token = jwt.sign({ id: user._id }, JWT_SECRET, { expiresIn: '1h' }); // 1 hour expiry
+        const resetLink = `${CLIENT_URL}/reset-password?token=${token}`;
+        const html = `<p>Click <a href="${resetLink}">here</a> to reset your password. This link will expire in 1 hour.</p>`;
+        await sendEmail(user.email, "Password Reset", html);
+        return user;
+    }
+
+    async resetPassword(token?: string, newPassword?: string) {
+        try {
+          if (!token || !newPassword) {
+            throw new HttpError(400, "Token and new password are required");
+          }
+          const decoded: any = jwt.verify(token, JWT_SECRET);
+          const userId = decoded.id;
+          const hashedPassword = await bcryptjs.hash(newPassword, 10);
+          const updatedUser = await userRepository.updateUser(userId, { password: hashedPassword });
+          if (!updatedUser) {
+            throw new HttpError(404, "User not found");
+          }
+          return updatedUser;
+        } catch (error) {
+          throw new HttpError(400, "Invalid or expired token");
+        }
+      }
 }

@@ -2,7 +2,8 @@ import express, { Application, Request, Response, NextFunction } from 'express';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import path from 'path';
-
+import dotenv from 'dotenv';
+dotenv.config();
 import { connectDatabase } from './database/db';
 import { PORT } from './config';
 import { HttpError } from './errors/http-error';
