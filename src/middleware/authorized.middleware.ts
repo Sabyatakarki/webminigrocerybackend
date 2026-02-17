@@ -19,9 +19,9 @@ export const authorizedMiddleware =
             let token: string | undefined;
             const authHeader = req.headers.authorization;
             if (authHeader && authHeader.startsWith('Bearer ')) {
-                token = authHeader.split(' ')[1]; // 0 -> Bearer, 1 -> token
+                token = authHeader.split(' ')[1]; 
             } else if (req.body && req.body.token) {
-                // Check for token in request body (for multipart requests)
+                
                 token = req.body.token;
             }
             if (!token) throw new HttpError(401, 'Unauthorized JWT missing');
