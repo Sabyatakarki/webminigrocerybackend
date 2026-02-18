@@ -11,6 +11,11 @@ import { HttpError } from './errors/http-error';
 // IMPORT API ROUTES
 import authRoutes from './routes/auth.route';
 import adminUserRoutes from './routes/admin/user.routes';
+import { getProducts } from './controllers/Product.controller';
+import productRoutes from './routes/Product.routes';
+import adminProductRoutes from './routes/admin/adminProduct.routes';
+
+
 
 const app: Application = express();
 
@@ -28,6 +33,19 @@ app.use(
   "/uploads/profile_pictures",
   express.static(path.join(__dirname, "../public/profile_pictures"))
 );
+
+
+app.use(
+  "/uploads/products",
+  express.static(path.join(__dirname, "../public/products"))
+);
+app.use("/api/products", productRoutes);
+
+
+//for admin
+app.use("/api/admin/products", adminProductRoutes);
+
+
 
 /* Body parser middleware */
 app.use(bodyParser.json());
