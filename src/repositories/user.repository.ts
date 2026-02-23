@@ -60,7 +60,7 @@ export interface IUserRepository {
   createUser(userData: Partial<IUser>): Promise<IUser>;
   getUserById(id: string): Promise<IUser | null>;
 
-  // ✅ Pagination like teacher
+  
   getAllUsers(
     page: number,
     size: number,

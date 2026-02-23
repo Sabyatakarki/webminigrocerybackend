@@ -11,9 +11,9 @@ import { HttpError } from './errors/http-error';
 // IMPORT API ROUTES
 import authRoutes from './routes/auth.route';
 import adminUserRoutes from './routes/admin/user.routes';
-import { getProducts } from './controllers/Product.controller';
 import productRoutes from './routes/Product.routes';
 import adminProductRoutes from './routes/admin/adminProduct.routes';
+import orderRoutes from './routes/order.routes';
 
 
 
@@ -27,6 +27,11 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
+
+/* Body parser middleware */
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
 
 /* Serve static public folder */
 app.use(
@@ -43,13 +48,18 @@ app.use("/api/products", productRoutes);
 
 
 //for admin
-app.use("/api/admin/products", adminProductRoutes);
+app.use("/api/admin", adminProductRoutes);
 
 
 
-/* Body parser middleware */
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(
+  "/uploads/orders",
+  express.static(path.join(__dirname, "../public/orders"))
+);
+//users
+app.use("/api/orders", orderRoutes);
+
+
 
 /* API ROUTES */
 app.use('/api/auth', authRoutes);

@@ -7,13 +7,17 @@ import { HttpError } from "../errors/http-error";
 // CREATE PRODUCT
 export const createProduct = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { name, quantity } = req.body;
-    if (!name || !quantity) return next(new HttpError(400, "Name and quantity are required"));
+    const { name, quantity, price } = req.body;
+    if (!name || !quantity || price === undefined) {
+      return next(new HttpError(400, "Name, quantity and price are required"));
+    }
     if (!req.file) return next(new HttpError(400, "Product image is required"));
 
     const product = await Product.create({
       name,
       quantity,
+      price,
+      category: req.body.category,
       image: req.file.filename,
     });
 
@@ -41,11 +45,13 @@ export const updateProduct = async (req: Request, res: Response, next: NextFunct
 
     product.name = req.body.name || product.name;
     product.quantity = req.body.quantity || product.quantity;
+    product.price = req.body.price !== undefined ? req.body.price : product.price;
+    product.category = req.body.category || product.category;
 
     // If a new image is uploaded
     if (req.file) {
       const oldImagePath = path.join(__dirname, "../../public/products", product.image);
-      if (fs.existsSync(oldImagePath)) fs.unlinkSync(oldImagePath); // delete old image
+      if (fs.existsSync(oldImagePath)) fs.unlinkSync(oldImagePath); 
       product.image = req.file.filename;
     }
 

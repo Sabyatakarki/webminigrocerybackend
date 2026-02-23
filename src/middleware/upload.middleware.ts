@@ -6,7 +6,7 @@ import path from "path";
 import fs from "fs";
 import { HttpError } from "../errors/http-error";
 
-// --- Profile Picture Storage (existing) ---
+//For profile pictures
 const profileStorage = multer.diskStorage({
   destination: (req, file, cb) => {
     const uploadPath = path.join(__dirname, "../../public/profile_pictures");
@@ -20,7 +20,7 @@ const profileStorage = multer.diskStorage({
   }
 });
 
-// --- Product Image Storage (new) ---
+//for products
 const productStorage = multer.diskStorage({
   destination: (req, file, cb) => {
     const uploadPath = path.join(__dirname, "../../public/products");
@@ -33,6 +33,21 @@ const productStorage = multer.diskStorage({
     cb(null, `product-${fileSuffix}${ext}`);
   }
 });
+
+//for orders
+const orderStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    const uploadPath = path.join(__dirname, "../../public/orders");
+    if (!fs.existsSync(uploadPath)) fs.mkdirSync(uploadPath, { recursive: true });
+    cb(null, uploadPath);
+  },
+  filename: (req, file, cb) => {
+    const fileSuffix = uuidv4();
+    const ext = path.extname(file.originalname);
+    cb(null, `order-${fileSuffix}${ext}`);
+  }
+});
+
 
 
 const fileFilter = (
@@ -60,6 +75,12 @@ const productUpload = multer({
   fileFilter
 });
 
+const orderUpload = multer({
+  storage: orderStorage,
+  limits: { fileSize: 5 * 1024 * 1024 },
+  fileFilter
+});
+
 // --- Export helpers ---
 export const uploads = {
   profile: {
@@ -69,5 +90,10 @@ export const uploads = {
   product: {
     single: (fieldName: string) => productUpload.single(fieldName),
     array: (fieldName: string, maxCount: number) => productUpload.array(fieldName, maxCount),
+  },
+  orders:{
+    single: (fieldName: string) => orderUpload.single(fieldName),
+    array: (fieldName: string, maxCount: number) => orderUpload.array(fieldName, maxCount),
   }
+
 };

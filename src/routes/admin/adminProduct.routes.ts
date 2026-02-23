@@ -11,7 +11,7 @@ router.use(adminMiddleware);
 
 // CRUD
 router.get("/products", getProducts); // view all products
-router.get("/products/:id", getProductById); // view single product <-- add this
+router.get("/products/:id", getProductById); // view single product 
 router.post("/products", uploads.product.single("image"), createProduct); // add
 router.put("/products/:id", uploads.product.single("image"), updateProduct); // edit
 router.delete("/products/:id", deleteProduct); // delete
