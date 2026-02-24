@@ -5,13 +5,21 @@ export interface IOrderProduct {
   quantity: number;
 }
 
+export interface IShippingAddress {
+  fullName: string;
+  phone: string;
+  street: string;
+  city: string;
+  postalCode: string;
+}
+
 export interface IOrder extends Document {
   user: Types.ObjectId;
   products: IOrderProduct[];
   totalAmount: number;
   paymentMethod: "cash";
   status: "pending" | "confirmed" | "delivered";
-  image: string;
+  shippingAddress: IShippingAddress;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -56,8 +64,21 @@ const orderSchema = new Schema<IOrder>(
       enum: ["pending", "confirmed", "delivered"],
       default: "pending",
     },
-    
-    image: { type: String, required: false},
+
+    shippingAddress: {
+      fullName: {
+        type: String,
+        required: true,
+      },
+      phone: {
+        type: String,
+        required: true,
+      },
+      city: {
+        type: String,
+        required: true,
+      },
+    },
   },
   { timestamps: true }
 );

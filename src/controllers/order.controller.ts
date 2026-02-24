@@ -12,15 +12,30 @@ export const createOrder = async (
   next: NextFunction
 ) => {
   try {
-    let { products } = req.body;
+    let { products, shippingAddress } = req.body;
 
-    // If products is a string (from FormData), parse it
+    // Parse products if coming from FormData
     if (typeof products === "string") {
       products = JSON.parse(products);
     }
 
+    // Parse shippingAddress if coming from FormData
+    if (typeof shippingAddress === "string") {
+      shippingAddress = JSON.parse(shippingAddress);
+    }
+
     if (!products || products.length === 0) {
       return next(new HttpError(400, "No products in order"));
+    }
+
+    if (
+      !shippingAddress ||
+      !shippingAddress.fullName ||
+      !shippingAddress.phone ||
+      !shippingAddress.street ||
+      !shippingAddress.city
+    ) {
+      return next(new HttpError(400, "Complete shipping address is required"));
     }
 
     let totalAmount = 0;
@@ -46,18 +61,22 @@ export const createOrder = async (
 
       totalAmount += product.price * item.quantity;
 
-      // Use first product's image as order image
+      // Optional: Use first product's image
       if (i === 0 && product.image) {
-        const sourcePath = path.join(__dirname, "../../public/products", product.image);
+        const sourcePath = path.join(
+          __dirname,
+          "../../public/products",
+          product.image
+        );
+
         const fileExt = path.extname(product.image);
         const fileName = `order-${Date.now()}${fileExt}`;
-        const destPath = path.join(__dirname, "../../public/orders", fileName);
-
-        // Ensure orders folder exists
         const ordersDir = path.join(__dirname, "../../public/orders");
-        if (!fs.existsSync(ordersDir)) fs.mkdirSync(ordersDir, { recursive: true });
+        const destPath = path.join(ordersDir, fileName);
 
-        // Copy the image to orders folder
+        if (!fs.existsSync(ordersDir))
+          fs.mkdirSync(ordersDir, { recursive: true });
+
         fs.copyFileSync(sourcePath, destPath);
 
         orderImagePath = `/uploads/orders/${fileName}`;
@@ -69,7 +88,8 @@ export const createOrder = async (
       products,
       totalAmount,
       paymentMethod: "cash",
-      image: orderImagePath,
+      shippingAddress,
+    
     });
 
     res.status(201).json({

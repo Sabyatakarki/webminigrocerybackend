@@ -52,10 +52,10 @@ app.use("/api/admin", adminProductRoutes);
 
 
 
-app.use(
-  "/uploads/orders",
-  express.static(path.join(__dirname, "../public/orders"))
-);
+// app.use(
+//   "/uploads/orders",
+//   express.static(path.join(__dirname, "../public/orders"))
+// );
 //users
 app.use("/api/orders", orderRoutes);
 

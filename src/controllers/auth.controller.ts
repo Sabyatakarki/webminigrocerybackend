@@ -112,10 +112,14 @@ export class AuthController {
         });
       }
 
+      const existingUser = await userService.getUserById(userId);
+      parsedData.data.role = existingUser.role;
+
       // Handle profile image upload
       if (req.file) {
         parsedData.data.imageUrl = `/public/profile_pictures/${req.file.filename}`;
       }
+      
 
       // Update user
       const updatedUser = await userService.updateUser(userId, parsedData.data);

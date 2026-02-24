@@ -41,4 +41,5 @@ export type LoginUserDTO = z.infer<typeof LoginUserDTO>;
  * Allows updating any user field (fullName, phoneNumber, etc.)
  */
 export const UpdateUserDTO = UserSchema.partial();
+
 export type UpdateUserDTO = z.infer<typeof UpdateUserDTO>;

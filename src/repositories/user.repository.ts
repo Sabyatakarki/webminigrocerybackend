@@ -108,8 +108,8 @@ export class UserRepository implements IUserRepository {
 
     const [users, total] = await Promise.all([
       UserModel.find(filter)
-        .select("-password") // ✅ hide password
-        .sort({ createdAt: -1, _id: -1 }) // ✅ stable ordering for pagination
+        .select("-password") // 
+        .sort({ createdAt: -1, _id: -1 }) 
         .skip((page - 1) * size)
         .limit(size),
       UserModel.countDocuments(filter),
