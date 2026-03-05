@@ -10,11 +10,11 @@ const UserSchema: Schema = new Schema<UserType>(
     fullName: { type: String, required: true },
     phoneNumber: { type: String, required: true },
 
-    role: {
-      type: String,
-      enum: ["user", "admin"],
-      
-    },
+      role: {
+    type: String,
+    enum: ['admin', 'user'],
+    default: 'user'
+  },
 
     imageUrl: { type: String, required: false },
   },
